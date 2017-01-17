@@ -207,9 +207,26 @@ const Select = React.createClass({
 	componentDidUpdate (prevProps, prevState) {
 		// focus to the selected option
 		if (this.menu && this.focused && this.state.isOpen && !this.hasScrolledToOption) {
-			let focusedOptionNode = ReactDOM.findDOMNode(this.focused);
 			let menuNode = ReactDOM.findDOMNode(this.menu);
-			menuNode.scrollTop = focusedOptionNode.offsetTop;
+			// Set Scroll Location of the Drop down.
+			// If focus is null or set to the first option
+			if(!this.focused || this.focused.props.optionIndex == 0){
+				// Set the menu scroll to the top.
+				menuNode.scrollTop = 0;
+			}else{
+				// Check the previous setting incase its 'disabled'
+				let previousOptionToFocused = this.props.options[this.focused.props.optionIndex - 1]
+				if (previousOptionToFocused && previousOptionToFocused.disabled){
+					// If the previous sibling is disabled, make the disabled option shown.
+					// on the drop down above the focused option.
+					let focusedNodesPreviousSibling = ReactDOM.findDOMNode(this.focused).previousSibling;
+					menuNode.scrollTop = focusedNodesPreviousSibling.offsetTop;
+				}else{
+					// Set the Top option on the drop down to be the focused option.
+					let focusedOptionNode = ReactDOM.findDOMNode(this.focused);
+					menuNode.scrollTop = focusedOptionNode.offsetTop;
+				}
+			}
 			this.hasScrolledToOption = true;
 		} else if (!this.state.isOpen) {
 			this.hasScrolledToOption = false;
